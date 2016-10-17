@@ -44,11 +44,13 @@ if True:  # pragma: no cover
                 pass
 
     try:  # IPython 4.x / 3.x
-        if IPY == 32:
+        if IPY == 4:
+            from ipywidgets import IntProgress, HBox, HTML
+        elif IPY == 32:
             from IPython.html.widgets import IntProgress, HBox, HTML
             IPY = 3
         else:
-            from ipywidgets import IntProgress, HBox, HTML
+            raise ImportError()
     except ImportError:
         try:  # IPython 2.x
             from IPython.html.widgets import IntProgressWidget as IntProgress
@@ -80,7 +82,7 @@ class tqdm_notebook(tqdm):
     """
 
     @staticmethod
-    def status_printer(_, total=None, desc=None):
+    def status_printer(_, total=None, desc=None, ncols=None):
         """
         Manage the printing of an IPython/Jupyter Notebook progress bar widget.
         """
@@ -104,6 +106,17 @@ class tqdm_notebook(tqdm):
         ptext = HTML()
         # Only way to place text to the right of the bar is to use a container
         container = HBox(children=[pbar, ptext])
+        # Prepare layout (if available in ipywidgets version)
+        #try:  # commented until it works, ease debugging
+        if not ncols:
+            ncols = '100%'
+        pbar.layout.width = ncols
+        container.layout.width = ncols
+        container.layout.display = 'inline-flex'
+        container.layout.flex_flow = 'row wrap'
+        #except Exception:
+            #pass
+        # Display!
         display(container)
 
         def print_status(s='', close=False, bar_style=None, desc=None):
@@ -172,8 +185,14 @@ class tqdm_notebook(tqdm):
         # Delete first pbar generated from super() (wrong total and text)
         # DEPRECATED by using gui=True
         # self.sp('', close=True)
+
+        # Get bar width
+        ncols = kwargs.get('ncols', None)
+        if ncols is None or self.dynamic_ncols:
+            self.ncols = '100%'
+
         # Replace with IPython progress bar display (with correct total)
-        self.sp = self.status_printer(self.fp, self.total, self.desc)
+        self.sp = self.status_printer(self.fp, self.total, self.desc, self.ncols)
         self.desc = None  # trick to place description before the bar
 
         # Print initial bar state
