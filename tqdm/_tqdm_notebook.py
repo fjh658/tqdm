@@ -115,7 +115,6 @@ class tqdm_notebook(tqdm):
             container.layout.width = ncols
             container.layout.display = 'inline-flex'
             container.layout.flex_flow = 'row wrap'
-        
         display(container)
 
         def print_status(s='', close=False, bar_style=None, desc=None):
@@ -186,7 +185,7 @@ class tqdm_notebook(tqdm):
         # self.sp('', close=True)
 
         # Get bar width
-        ncols = kwargs.get('ncols', None)
+        self.ncols = kwargs.get('ncols', None)
         if self.dynamic_ncols:
             self.ncols = '100%'
 
