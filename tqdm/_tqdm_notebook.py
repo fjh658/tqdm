@@ -44,13 +44,11 @@ if True:  # pragma: no cover
                 pass
 
     try:  # IPython 4.x / 3.x
-        if IPY == 4:
-            from ipywidgets import IntProgress, HBox, HTML
-        elif IPY == 32:
+        if IPY == 32:
             from IPython.html.widgets import IntProgress, HBox, HTML
             IPY = 3
         else:
-            raise ImportError()
+            from ipywidgets import IntProgress, HBox, HTML
     except ImportError:
         try:  # IPython 2.x
             from IPython.html.widgets import IntProgressWidget as IntProgress
